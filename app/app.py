@@ -1,12 +1,12 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, jsonify
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
 # Conexión MySQL
-app.config['MYSQL_HOST'] = 'localhost:3306'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'Ab.12345'
 app.config['MYSQL_DB'] = 'abaco'
 
 conexion = MySQL(app)
@@ -52,6 +52,20 @@ def query_string():
     print(request.args.get('param2'))
     return "Ok"
 
+
+@app.route('/cursos')
+def listar_cursos():
+    data = {}
+    try:
+        cursor = conexion.connection.cursor()
+        sql = 'SELECT * FROM cursos ORDER BY nombre ASC'
+        cursor.execute(sql)
+        cursos = cursor.fetchall()
+        print(cursos)
+        data['mensaje'] = 'Exito!'
+    except Exception as ex:
+        data['mensaje'] = 'Error ...'
+    return jsonify(data)
 
 def pagina_no_encontrada(error):
     # return render_template('404.html'), 404
